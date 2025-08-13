@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Spacing Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-blue-800 text-yellow-300 font-sans flex flex-col items-center justify-center p-4">
+    <div class="max-w-xl w-full bg-white/10 backdrop-blur-lg rounded-3xl p-4 sm:p-6 shadow-2xl border border-white/20">
+        <h2 class="text-xl mb-4 text-center text-yellow-300">Button Spacing Test</h2>
+        
+        <!-- Current Implementation -->
+        <div class="mb-8">
+            <h3 class="text-lg mb-2 text-yellow-200">Current Implementation:</h3>
+            <div class="flex flex-wrap justify-center gap-3 p-3 border border-yellow-400/30 rounded-lg">
+                <button class="relative flex-1 min-w-0 sm:flex-none sm:min-w-[140px] rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option A
+                </button>
+                <button class="relative flex-1 min-w-0 sm:flex-none sm:min-w-[140px] rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option B
+                </button>
+                <button class="relative flex-1 min-w-0 sm:flex-none sm:min-w-[140px] rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option C
+                </button>
+                <button class="relative flex-1 min-w-0 sm:flex-none sm:min-w-[140px] rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option D
+                </button>
+            </div>
+        </div>
+
+        <!-- Alternative: Grid Layout -->
+        <div class="mb-8">
+            <h3 class="text-lg mb-2 text-yellow-200">Alternative: Grid Layout:</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 border border-yellow-400/30 rounded-lg">
+                <button class="relative rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option A
+                </button>
+                <button class="relative rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option B
+                </button>
+                <button class="relative rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option C
+                </button>
+                <button class="relative rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option D
+                </button>
+            </div>
+        </div>
+
+        <!-- Alternative: Fixed Width -->
+        <div class="mb-8">
+            <h3 class="text-lg mb-2 text-yellow-200">Alternative: Fixed Width:</h3>
+            <div class="flex flex-wrap justify-center gap-3 p-3 border border-yellow-400/30 rounded-lg">
+                <button class="relative w-full sm:w-32 rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option A
+                </button>
+                <button class="relative w-full sm:w-32 rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option B
+                </button>
+                <button class="relative w-full sm:w-32 rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option C
+                </button>
+                <button class="relative w-full sm:w-32 rounded-xl border-2 transition-all duration-300 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 text-yellow-900 px-4 py-3 text-center font-semibold cursor-pointer shadow-lg">
+                    Option D
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
