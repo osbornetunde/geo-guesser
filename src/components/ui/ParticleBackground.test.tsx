@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { ParticleBackground } from '../ParticleBackground';
+import { ParticleBackground } from './ParticleBackground';
 import { vi } from 'vitest';
 
 describe('ParticleBackground', () => {

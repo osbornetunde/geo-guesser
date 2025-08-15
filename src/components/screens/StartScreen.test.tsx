@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { StartScreen } from '../StartScreen';
+import { StartScreen } from './StartScreen';
 import { vi } from 'vitest';
 
 describe('StartScreen', () => {

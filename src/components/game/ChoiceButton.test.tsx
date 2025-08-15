@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { ChoiceButton } from '../ChoiceButton';
+import { ChoiceButton } from './ChoiceButton';
 import { vi } from 'vitest';
 
 const defaultProps = {
