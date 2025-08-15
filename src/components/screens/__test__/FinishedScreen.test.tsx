@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { FinishedScreen } from './FinishedScreen';
+import { FinishedScreen } from '../FinishedScreen';
 import { vi } from 'vitest';
-import * as gameUtils from '../../utils/game';
+import * as gameUtils from '../../../utils/game';
 
 // Mock the game utils
 vi.mock('../../utils/game', () => ({

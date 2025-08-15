@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { CircularTimer } from './CircularTimer';
+import { CircularTimer } from '../CircularTimer';
 
 describe('CircularTimer', () => {
   it('renders the seconds left', () => {
