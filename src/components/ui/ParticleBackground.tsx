@@ -126,6 +126,7 @@ export const ParticleBackground = () => {
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
       style={{ background: "transparent" }}
+      data-testid="particle-canvas"
     />
   );
 };
