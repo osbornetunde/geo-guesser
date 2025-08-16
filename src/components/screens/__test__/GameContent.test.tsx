@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { GameContent } from './GameContent';
+import { GameContent } from '../GameContent';
 import { vi } from 'vitest';
-import { questions } from '../../data';
+import { questions } from '../../../data';
 
 const mockGameState = {
   round: 0,

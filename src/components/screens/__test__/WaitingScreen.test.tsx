@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { WaitingScreen } from './WaitingScreen';
+import { WaitingScreen } from '../WaitingScreen';
 import { vi } from 'vitest';
 
 const defaultProps = {

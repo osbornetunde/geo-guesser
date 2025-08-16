@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TeamSetupScreen } from './TeamSetupScreen';
+import { TeamSetupScreen } from '../TeamSetupScreen';
 import { vi } from 'vitest';
-import * as gameUtils from '../../utils/game';
+// import * as gameUtils from '../../../utils/game';
 
-vi.mock('../../utils/game', () => ({
-  ...vi.importActual('../../utils/game'),
+vi.mock('../../../utils/game', () => ({
+  ...vi.importActual('../../../utils/game'),
   getRandomAvatar: vi.fn(() => '🧑‍🚀'),
 }));
 

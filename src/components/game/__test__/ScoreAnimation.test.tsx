@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { ScoreAnimation } from './ScoreAnimation';
+import { ScoreAnimation } from '../ScoreAnimation';
 
 describe('ScoreAnimation', () => {
   it('renders the points with a plus prefix', () => {
