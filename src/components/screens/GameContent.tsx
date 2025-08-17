@@ -58,6 +58,15 @@ export const GameContent = ({ gameState }: GameContentProps) => {
   const QuizImage = useMemo(() => {
     if (!currentQuestion) return null;
 
+    let difficultyBadgeClass: string | undefined;
+    if (currentQuestion.difficulty === "easy") {
+      difficultyBadgeClass = "bg-emerald-600/80";
+    } else if (currentQuestion.difficulty === "medium") {
+      difficultyBadgeClass = "bg-amber-600/80";
+    } else if (currentQuestion.difficulty === "hard") {
+      difficultyBadgeClass = "bg-rose-600/80";
+    }
+
     return (
       <div style={{ height: "400px", marginBottom: "24px" }}>
         <motion.div
@@ -107,7 +116,18 @@ export const GameContent = ({ gameState }: GameContentProps) => {
               setImageLoaded(true);
               setImageLoading(false);
             }}
-            onError={() => setImageLoading(false)}
+            onError={(e) => {
+              // If the remote image fails, swap to a local placeholder to avoid blank UI.
+              const img = e.currentTarget as HTMLImageElement;
+              // Prevent infinite loop by checking a data attribute.
+              if (img.dataset?.fallback === "true") {
+                setImageLoading(false);
+                return;
+              }
+              img.dataset.fallback = "true";
+              img.src = "/vite.svg"; // small local asset already in public/
+              setImageLoading(false);
+            }}
           />
 
           <div
@@ -124,6 +144,29 @@ export const GameContent = ({ gameState }: GameContentProps) => {
               📸 {currentQuestion.credit}
             </p>
           </div>
+
+          {/* Category / country badge */}
+          {(currentQuestion.category || currentQuestion.country) && (
+            <div className="absolute top-3 left-3 flex items-center gap-2">
+              {currentQuestion.category && (
+                <span className="text-xs font-semibold px-2 py-1 rounded-full bg-purple-700/60 text-white backdrop-blur-sm">
+                  {currentQuestion.category}
+                </span>
+              )}
+              {currentQuestion.country && (
+                <span className="text-xs font-medium px-2 py-1 rounded-full bg-black/60 text-gray-200">
+                  {currentQuestion.country}
+                </span>
+              )}
+              {currentQuestion.difficulty && (
+                <span
+                  className={`text-xs font-semibold px-2 py-1 rounded-full text-white ${difficultyBadgeClass}`}
+                >
+                  {currentQuestion.difficulty}
+                </span>
+              )}
+            </div>
+          )}
 
           {imageLoading && (
             <div
@@ -334,6 +377,65 @@ export const GameContent = ({ gameState }: GameContentProps) => {
                 <p className="text-gray-400 text-sm mt-3 italic border-l-2 border-purple-400/50 pl-3">
                   💡 Fun fact: {currentQuestion.hint}
                 </p>
+              )}
+              {/* Map preview when coords are available */}
+              {currentQuestion.coords && (
+                <div className="mt-4">
+                  <div className="text-sm text-gray-300 mb-2">
+                    📍 Location preview
+                  </div>
+                  <div className="w-full h-40 rounded-lg overflow-hidden border border-gray-700 relative bg-black">
+                    {/* Compute OSM tile coordinates and pixel offsets for a marker */}
+                    {(() => {
+                      const z = 15;
+                      const lat = currentQuestion.coords.lat;
+                      const lon = currentQuestion.coords.lng;
+                      const latRad = (lat * Math.PI) / 180;
+                      const n = Math.pow(2, z);
+                      const xtile = ((lon + 180) / 360) * n;
+                      const ytile =
+                        ((1 -
+                          Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) /
+                            Math.PI) /
+                          2) *
+                        n;
+                      const tileX = Math.floor(xtile);
+                      const tileY = Math.floor(ytile);
+                      const pixelX = Math.floor((xtile - tileX) * 256);
+                      const pixelY = Math.floor((ytile - tileY) * 256);
+                      const tileUrl = `https://a.tile.openstreetmap.org/${z}/${tileX}/${tileY}.png`;
+                      const leftPct = (pixelX / 256) * 100;
+                      const topPct = (pixelY / 256) * 100;
+
+                      return (
+                        <>
+                          <img
+                            src={tileUrl}
+                            alt="map preview"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              display: "block",
+                            }}
+                          />
+                          {/* marker */}
+                          <div
+                            aria-hidden
+                            style={{
+                              position: "absolute",
+                              left: `${leftPct}%`,
+                              top: `${topPct}%`,
+                              transform: "translate(-50%, -50%)",
+                            }}
+                          >
+                            <div className="w-3 h-3 rounded-full bg-red-500 ring-2 ring-white shadow-md" />
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
               )}
             </div>
           </div>

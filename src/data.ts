@@ -1,536 +1,414 @@
-export const questions = [
+// Curated global question set. Each raw entry lists the correct `answer` plus three `distractors`.
+// At module load we shuffle options so the correct answer's position is randomized and
+// `answerIndex` is computed to match the shuffled options array.
+
+type RawQ = {
+  id: string;
+  image: string;
+  credit?: string;
+  license?: string;
+  answer: string;
+  distractors: string[]; // length should be 3
+  hint?: string;
+  explain?: string;
+  category?: string; // e.g. 'landmark' | 'nature' | 'cultural' | 'city' | 'island'
+  country?: string;
+  coords?: { lat: number; lng: number };
+  difficulty?: "easy" | "medium" | "hard";
+};
+
+// Seeded RNG (mulberry32) so shuffles are reproducible when a seed is provided.
+// Seed selection order:
+// 1. Vite env: import.meta.env.VITE_SEED (recommended for frontend builds/tests)
+// 2. Node env: process.env.SEED
+// 3. Fallback: fixed seed 1337
+const getSeed = (): number => {
+  // Prefer Vite-provided seed when available
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const viteSeed = (import.meta as any)?.env?.VITE_SEED;
+  if (viteSeed) return Number(viteSeed);
+
+  // Fall back to Node env accessed via globalThis to avoid referencing `process` directly
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nodeSeed = (globalThis as any)?.process?.env?.SEED;
+  if (nodeSeed) return Number(nodeSeed);
+
+  // No explicit seed provided — use current time as a non-deterministic fallback.
+  // Use a 32-bit unsigned integer derived from Date.now()
+  return (Date.now() & 0xffffffff) >>> 0;
+};
+
+const mulberry32 = (seed: number) => {
+  let t = seed >>> 0;
+  return () => {
+    t += 0x6d2b79f5;
+    let r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+const rng = mulberry32(getSeed());
+
+const shuffleArray = <T>(arr: T[]) => {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
+const rawQuestions: RawQ[] = [
   {
-    id: "lekki-bridge-day-1",
+    id: "eiffel-tower-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/7/74/Lekki_Ikoyi_Link_Bridge.jpg",
-    credit: "Wikimedia Commons contributors (see file page)",
-    license: "See file page",
-    options: [
-      "Lekki‑Ikoyi Link Bridge",
-      "Third Mainland Bridge",
-      "Eko Bridge",
-      "Carter Bridge",
-    ],
-    answerIndex: 0,
-    hint: "Lagos’s most photographed cable‑stayed bridge.",
-    explain:
-      "The 1.36km bridge links Lekki Phase 1 with Ikoyi and is a Lagos icon.[13]",
-  },
-  {
-    id: "lekki-bridge-night-2",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/d/de/Lekki_ikoyi_link_bridge.jpg",
-    credit: "Jeff Attaway, Wikimedia Commons",
-    license: "CC BY 2.0 (see file page)",
-    options: [
-      "Lekki‑Ikoyi Link Bridge",
-      "Third Mainland Bridge",
-      "Eko Bridge",
-      "Carter Bridge",
-    ],
-    answerIndex: 0,
-    hint: "Cable-stayed span famous for its illuminated pylons at night.",
-    explain:
-      "The bridge connects Lekki Phase 1 to Ikoyi and lights up spectacularly after dark.[13]",
-  },
-  {
-    id: "third-mainland-bridge-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/b/bd/Third-mainland-bridge-lagos.jpg",
-    credit: "S.aderogba, Wikimedia Commons",
-    license: "CC BY-SA 4.0",
-    options: [
-      "Lekki‑Ikoyi Link Bridge",
-      "National Theatre",
-      "Third Mainland Bridge",
-      "Eko Bridge",
-    ],
-    answerIndex: 2,
-    hint: "Longest of Lagos’s three main Island–Mainland connectors.",
-    explain:
-      "Third Mainland Bridge carries heavy traffic between the Island and mainland districts.[8]",
-  },
-  {
-    id: "eko-bridge-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/f/f2/A_view_of_Lagos_Island_from_Eko_bridge.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/a/a8/Tour_Eiffel_Wikimedia_Commons.jpg",
     credit: "Wikimedia Commons",
-    license: "CC BY-SA 4.0",
-    options: [
-      "Eko Bridge",
-      "Third Mainland Bridge",
-      "Carter Bridge",
-      "Lekki‑Ikoyi Link Bridge",
-    ],
-    answerIndex: 0,
-    hint: "The western of the three main bridges linking Island to Mainland.",
-    explain:
-      "Eko Bridge spans from Ijora to Apongbon and was built in phases between 1965 and 1975.[13][16]",
-  },
-  {
-    id: "carter-bridge-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/0/0e/Carter_Bridge_in_Lagos_State._Nigeria._Built_in_1901.jpg",
-    credit: "Koutchika Lihouenou Gaspard, Wikimedia Commons",
-    license: "CC BY-SA 4.0",
-    options: [
-      "Carter Bridge",
-      "Third Mainland Bridge",
-      "Eko Bridge",
-      "Lekki‑Ikoyi Link Bridge",
-    ],
-    answerIndex: 0,
-    hint: "Historically the oldest major connector to Lagos Island.",
-    explain:
-      "Carter Bridge is one of the three principal bridges linking the Island and mainland across the lagoon.[8][13]",
-  },
-  {
-    id: "national-theatre-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/5/58/National_Theatre_Nigeria_with_flags.jpg",
-    credit: "Jean-fidele E. Ananou, Wikimedia Commons",
-    license: "CC BY-SA 4.0",
-    options: [
-      "National Theatre",
-      "Tafawa Balewa Square",
-      "Eko Hotel & Suites",
-      "Civic Centre",
-    ],
-    answerIndex: 0,
-    hint: "1970s cultural complex with a bowl-shaped roof.",
-    explain:
-      "The National Theatre in Iganmu is a landmark venue for Nigerian performing arts.[5]",
-  },
-  {
-    id: "tbs-arena-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/1/14/Tafawa_Balewa_Square_Lagos.jpg",
-    credit: "Beendy234, Wikimedia Commons",
-    license: "CC BY-SA 4.0",
-    options: [
-      "Tafawa Balewa Square",
-      "Freedom Park",
-      "Tinubu Square",
-      "Marina",
-    ],
-    answerIndex: 0,
-    hint: "Historic parade ground turned civic square on Lagos Island.",
-    explain:
-      "TBS hosts national events and is known for its monumental horse statues and vast plaza.[5]",
-  },
-  {
-    id: "freedom-park-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/7/73/Live_music_show_called_Afropolitan_vibes_at_freedom_park._Lagos_Nigeria.jpg",
-    credit: "Kaustavp, Wikimedia Commons",
-    license: "CC BY-SA 4.0",
-    options: [
-      "Freedom Park",
-      "Muri Okunola Park",
-      "Ndubuisi Kanu Park",
-      "Jhalobia Gardens",
-    ],
-    answerIndex: 0,
-    hint: "Former colonial prison repurposed into an arts park.",
-    explain:
-      "Freedom Park on Broad Street is a memorial leisure park and cultural venue.[5]",
-  },
-  {
-    id: "nike-art-gallery-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/5/53/Outside_Nike_Art_Gallery_%284202980259%29.jpg",
-    credit: "Jeremy Weate, Wikimedia Commons",
-    license: "CC BY 2.0",
-    options: [
-      "Nike Art Gallery",
-      "Terra Kulture",
-      "National Museum Lagos",
-      "Thought Pyramid",
-    ],
-    answerIndex: 0,
-    hint: "Multi‑story private gallery in Lekki.",
-    explain:
-      "Nike Art Gallery showcases Nigerian art and textile traditions in a multi‑floor space.[4]",
-  },
-  {
-    id: "national-museum-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/c/c8/National_Museum_Lagos-Nigerian_Art_In_The_Circle_of_Life.jpg",
-    credit: "Olusola David, Ayibiowu, Wikimedia Commons",
-    license: "CC BY-SA 4.0",
-    options: [
-      "National Museum Lagos",
-      "Kalakuta Museum",
-      "Jaekel House",
-      "Badagry Heritage Museum",
-    ],
-    answerIndex: 0,
-    hint: "Home to artifacts like Nok terracotta and traditional regalia.",
-    explain:
-      "The National Museum in Onikan preserves significant Nigerian cultural artifacts.[8]",
-  },
-  {
-    id: "terra-kulture-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/6/6b/Lagos_%28Nigeria%29.jpg",
-    credit: "Anders Broberg, Wikimedia Commons",
-    license: "CC BY-SA 2.0",
-    options: [
-      "Terra Kulture",
-      "Freedom Park",
-      "Eko Convention Centre",
-      "MUSON Centre",
-    ],
-    answerIndex: 0,
-    hint: "Arts, theatre, and bookshop venue on Victoria Island.",
-    explain:
-      "Terra Kulture is known for stage productions, exhibitions, and a cultural cafe.[4]",
-  },
-  {
-    id: "muson-centre-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/6/6b/Lagos_%28Nigeria%29.jpg",
-    credit: "Anders Broberg, Wikimedia Commons",
-    license: "CC BY-SA 2.0",
-    options: [
-      "MUSON Centre",
-      "Eko Convention Centre",
-      "Civic Centre",
-      "Landmark Centre",
-    ],
-    answerIndex: 0,
-    hint: "Classical music and events venue at Onikan.",
-    explain:
-      "MUSON Centre hosts concerts, education programs, and cultural events.[3]",
-  },
-  {
-    id: "balogun-market-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/1/1b/Balogun_Market%2C_Lagos_Island.jpg",
-    credit: "Yellowcrunchy, Wikimedia Commons",
-    license: "CC BY-SA 4.0",
-    options: [
-      "Balogun Market",
-      "Lekki Arts & Crafts Market",
-      "Tejuosho Market",
-      "Oyingbo Market",
-    ],
-    answerIndex: 0,
-    hint: "Bustling fabrics and goods hub on Lagos Island.",
-    explain:
-      "Balogun Market is famed for textiles, accessories, and vibrant lanes.[8]",
-  },
-  {
-    id: "lekki-arts-crafts-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/c/ce/2008_LekkiMarket_Lagos_Nigeria_2349218847.jpg",
-    credit: "shawnleishman, Wikimedia Commons",
-    license: "CC BY-SA 2.0",
-    options: [
-      "Lekki Arts & Crafts Market",
-      "Computer Village",
-      "Tejuosho Market",
-      "Epe Fish Market",
-    ],
-    answerIndex: 0,
-    hint: "Also called Oba Elegushi Market, known for handmade decor and art.",
-    explain:
-      "The market offers carvings, fabrics, and artisan goods popular with visitors.[4]",
-  },
-  {
-    id: "computer-village-1",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/1/13/Computer_Village_Ikeja.jpg",
-    credit: "Wikimedia Commons (see file page)",
     license: "See file page",
-    options: [
-      "Computer Village",
-      "Tejuosho Market",
-      "Oyingbo Market",
-      "Balogun Market",
-    ],
-    answerIndex: 0,
-    hint: "Nigeria’s largest ICT/device hub in Ikeja.",
+    answer: "Eiffel Tower",
+    distractors: ["Arc de Triomphe", "Louvre Pyramid", "Notre-Dame Cathedral"],
+    hint: "Iconic wrought-iron lattice tower in a European capital.",
     explain:
-      "Computer Village is the go‑to market for electronics, repairs, and accessories.[8]",
+      "Designed by Gustave Eiffel, it was built for the 1889 Exposition Universelle and remains Paris’s most recognised landmark.",
+    category: "landmark",
+    country: "France",
+    coords: { lat: 48.8584, lng: 2.2945 },
+    difficulty: "easy",
   },
   {
-    id: "epe-fish-1",
+    id: "grand-canyon-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/9/9c/Epe_Fish_Market.jpg",
-    credit: "Wikimedia Commons (see file page)",
+      "https://upload.wikimedia.org/wikipedia/commons/a/af/Grand_Canyon_view_from_Pima_Point_2010.jpg",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: [
-      "Epe Fish Market",
-      "Oyingbo Market",
-      "Makoko Waterfront",
-      "Elegushi Market",
-    ],
-    answerIndex: 0,
-    hint: "Coastal town market famous for fresh and smoked fish.",
+    answer: "Grand Canyon",
+    distractors: ["Zion Canyon", "Bryce Canyon", "Monument Valley"],
+    hint: "A vast, steep-sided gorge carved by a major North American river.",
     explain:
-      "Epe Fish Market is renowned for seafood trading with traditional displays.[8]",
+      "The Grand Canyon in Arizona was carved by the Colorado River and exposes nearly two billion years of Earth’s geological history.",
+    category: "nature",
+    country: "USA",
+    coords: { lat: 36.1069, lng: -112.1129 },
+    difficulty: "medium",
   },
   {
-    id: "tejuosho-1",
+    id: "great-wall-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/2/27/Tejuosho_Market_Surulere.jpg",
-    credit: "Wikimedia Commons (see file page)",
+      "https://upload.wikimedia.org/wikipedia/commons/3/38/GreatWall_2004_Summer_4.jpg",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: [
-      "Tejuosho Market",
-      "Balogun Market",
-      "Oshodi Market",
-      "Oyingbo Market",
-    ],
-    answerIndex: 0,
-    hint: "Rebuilt multi-level market complex in Surulere.",
+    answer: "Great Wall of China",
+    distractors: ["Terracotta Army", "Forbidden City", "Temple of Heaven"],
+    hint: "Ancient series of fortifications running across northern Asia.",
     explain:
-      "Tejuosho features a structured mall‑like complex with numerous stalls.[3]",
+      "Built and rebuilt between the 7th century BC and the 17th century to protect Chinese states and empires from nomadic incursions.",
+    category: "landmark",
+    country: "China",
+    coords: { lat: 40.4319, lng: 116.5704 },
+    difficulty: "medium",
   },
   {
-    id: "tarkwa-bay-1",
+    id: "machu-picchu-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/8/8f/Tarkwa_bay_beach%2C_Lagos%2C_Nigeria.jpg",
-    credit: "Wikimedia Commons (see file page)",
+      "https://upload.wikimedia.org/wikipedia/commons/e/eb/Machu_Picchu%2C_Peru.jpg",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: ["Tarkwa Bay", "Elegushi Beach", "Oniru Beach", "Ilashe Beach"],
-    answerIndex: 0,
-    hint: "Sheltered beach near the harbor, typically accessed by boat.",
+    answer: "Machu Picchu",
+    distractors: ["Sacsayhuamán", "Ollantaytambo", "Choquequirao"],
+    hint: "High-altitude Inca citadel perched above a Urubamba valley.",
     explain:
-      "Tarkwa Bay is an artificial, sheltered beach popular for swimming and water sports.[17]",
+      "Machu Picchu is an Inca site in Peru, famous for its dry-stone walls and panoramic mountain setting.",
+    category: "cultural",
+    country: "Peru",
+    coords: { lat: -13.1631, lng: -72.545 },
+    difficulty: "hard",
   },
   {
-    id: "tarkwa-bay-eko-atlantic-2",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/9/97/View_Tarkwa_Bay_Beach_with_Eko_Atlantic_Buildings_at_Backgroung%2C_in_Lagos_State._Nigeria_%283%29.jpg",
-    credit: "Wikimedia Commons (see file page)",
+    id: "taj-mahal-1",
+    image: "https://upload.wikimedia.org/wikipedia/commons/d/da/Taj-Mahal.jpg",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: ["Tarkwa Bay", "Landmark Beach", "Oniru Beach", "Elegushi Beach"],
-    answerIndex: 0,
-    hint: "Beach view with Eko Atlantic skyline in the distance.",
+    answer: "Taj Mahal",
+    distractors: ["Red Fort", "Qutub Minar", "Humayun's Tomb"],
+    hint: "White-marble mausoleum built as a monument to love.",
     explain:
-      "Tarkwa Bay offers lagoon‑side vistas and proximity to the Eko Atlantic development.[14]",
+      "Commissioned by Mughal emperor Shah Jahan in memory of his wife Mumtaz Mahal, the Taj Mahal is an emblem of India’s Mughal architecture.",
+    category: "landmark",
+    country: "India",
+    coords: { lat: 27.1751, lng: 78.0421 },
+    difficulty: "easy",
   },
   {
-    id: "elegushi-beach-1",
+    id: "sydney-opera-house-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/6/6b/Elegushi_Beach.jpg",
-    credit: "Wikimedia Commons (see file page)",
+      "https://upload.wikimedia.org/wikipedia/commons/4/40/Sydney_Opera_House_Sails.jpg",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: ["Elegushi Beach", "Oniru Beach", "Landmark Beach", "Alpha Beach"],
-    answerIndex: 0,
-    hint: "Popular private beach with nightlife and lounges in Lekki.",
-    explain: "Elegushi features music, food stalls, and beach activities.[8]",
+    answer: "Sydney Opera House",
+    distractors: ["Harbour Bridge", "Bondi Beach", "Taronga Zoo"],
+    hint: "Performing-arts centre known for its sail-like roof shells.",
+    explain:
+      "Designed by Jørn Utzon, the Sydney Opera House sits on Bennelong Point and is one of Australia’s most famous 20th-century buildings.",
+    category: "landmark",
+    country: "Australia",
+    coords: { lat: -33.8568, lng: 151.2153 },
+    difficulty: "easy",
   },
   {
-    id: "landmark-beach-1",
+    id: "burj-khalifa-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/1/1f/Landmark_Beach_Lagos.jpg",
-    credit: "Wikimedia Commons (see file page)",
+      "https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?auto=format&fit=crop&w=1350&q=80",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: ["Landmark Beach", "Oniru Beach", "Tarkwa Bay", "Eleko Beach"],
-    answerIndex: 0,
-    hint: "Curated shoreline with volleyball courts and branded cabanas.",
+    answer: "Burj Khalifa",
+    distractors: ["Petronas Towers", "Shanghai Tower", "CN Tower"],
+    hint: "World’s tallest skyscraper located in a Middle Eastern megacity.",
     explain:
-      "Landmark Beach is part of a larger leisure complex on Victoria Island.[8]",
+      "The Burj Khalifa in Dubai is the tallest man-made structure in the world.",
+    category: "landmark",
+    country: "UAE",
+    coords: { lat: 25.1972, lng: 55.2744 },
+    difficulty: "medium",
   },
   {
-    id: "lekki-conservation-1",
+    id: "colosseum-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/7/79/LEKKI_CONSERVATION_CENTRE.jpg",
-    credit: "Wikimedia Commons (see file page)",
+      "https://upload.wikimedia.org/wikipedia/commons/d/de/Colosseo_2020.jpg",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: [
-      "Lekki Conservation Centre",
-      "Lufasi Park",
-      "Johnson Jakande Tinubu Park",
-      "Ndubuisi Kanu Park",
-    ],
-    answerIndex: 0,
-    hint: "Long canopy walkway over wetlands and boardwalks.",
+    answer: "Colosseum",
+    distractors: ["Pantheon", "Roman Forum", "St. Peter's Basilica"],
+    hint: "Ancient Roman amphitheatre in a historic Italian city.",
     explain:
-      "LCC is a 78‑hectare reserve with a renowned canopy walk in Lekki.[6][15]",
+      "The Colosseum held gladiatorial contests and public spectacles in ancient Rome.",
+    category: "cultural",
+    country: "Italy",
+    coords: { lat: 41.8902, lng: 12.4922 },
+    difficulty: "easy",
   },
   {
-    id: "lekki-conservation-monkey-2",
+    id: "golden-gate-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/2/22/Monkey_at_Lekki_Conservation_Centre_01.jpg",
-    credit: "Wikimedia Commons (see file page)",
+      "https://upload.wikimedia.org/wikipedia/commons/0/0c/GoldenGateBridge-001.jpg",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: [
-      "Lekki Conservation Centre",
-      "Lufasi Park",
-      "Okomu National Park",
-      "Jhalobia Gardens",
-    ],
-    answerIndex: 0,
-    hint: "Wildlife sightings along raised walkways.",
+    answer: "Golden Gate Bridge",
+    distractors: ["Brooklyn Bridge", "Tower Bridge", "Sydney Harbour Bridge"],
+    hint: "Suspension bridge painted in international orange spanning a foggy bay.",
     explain:
-      "Monkeys and birdlife are commonly viewed from LCC’s boardwalks and hides.[6][18]",
+      "The Golden Gate Bridge connects San Francisco to Marin County and is a symbol of California.",
+    category: "landmark",
+    country: "USA",
+    coords: { lat: 37.8199, lng: -122.4783 },
+    difficulty: "easy",
   },
   {
-    id: "lufasi-park-1",
+    id: "great-pyramid-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/9/9c/LUFASI_Nature_Park_Lekki.jpg",
-    credit: "Wikimedia Commons (see file page)",
+      "https://upload.wikimedia.org/wikipedia/commons/e/e3/Kheops-Pyramid.jpg",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: [
-      "Lufasi Park",
-      "Lekki Conservation Centre",
-      "Muri Okunola Park",
-      "Johnson Jakande Tinubu Park",
-    ],
-    answerIndex: 0,
-    hint: "NGO-run urban forest and conservation park in Lekki/Epe corridor.",
+    answer: "Great Pyramid of Giza",
+    distractors: ["Karnak Temple", "Luxor Temple", "Valley of the Kings"],
+    hint: "Oldest and largest of the three pyramids on the Giza Plateau.",
     explain:
-      "Lufasi Park focuses on environmental education and recreation in Lekki.[4]",
+      "The Great Pyramid is the oldest of the Seven Wonders of the Ancient World and remains largely intact.",
+    category: "historic",
+    country: "Egypt",
+    coords: { lat: 29.9792, lng: 31.1342 },
+    difficulty: "hard",
   },
   {
-    id: "yabatech-gate-1",
+    id: "table-mountain-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/8/86/Yaba_College_of_Technology_gate.jpg",
-    credit: "Wikimedia Commons (see file page)",
+      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1350&q=80",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: [
-      "Yaba College of Technology",
-      "UNILAG",
-      "LASU",
-      "Pan-Atlantic University",
-    ],
-    answerIndex: 0,
-    hint: "One of Nigeria’s oldest higher institutions in Yaba.",
-    explain: "Yabatech is recognized for its historic campus and gateway.[8]",
+    answer: "Table Mountain",
+    distractors: ["Lion's Head", "Signal Hill", "Devil's Peak"],
+    hint: "Flat-topped mountain overlooking a coastal South African city.",
+    explain:
+      "Table Mountain forms a prominent landmark overlooking Cape Town and the Atlantic seaboard.",
+    category: "nature",
+    country: "South Africa",
+    coords: { lat: -33.9628, lng: 18.4098 },
+    difficulty: "medium",
   },
   {
-    id: "unilag-lagoon-front-1",
+    id: "mount-fuji-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/8/8e/University_of_Lagos_Lagoon_Front.jpg",
-    credit: "Wikimedia Commons (see file page)",
+      "https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee?auto=format&fit=crop&w=1350&q=80",
+    credit: "Wikimedia Commons",
     license: "See file page",
-    options: [
-      "UNILAG Lagoon Front",
-      "LASU Waterfront",
-      "PAN‑Atlantic Lagoon",
-      "Calabar Marina",
-    ],
-    answerIndex: 0,
-    hint: "University campus vista over the Lagos Lagoon.",
+    answer: "Mount Fuji",
+    distractors: ["Mount Takao", "Mount Kita", "Mount Tate"],
+    hint: "Iconic snow-capped stratovolcano and Japan's tallest peak.",
     explain:
-      "UNILAG’s lagoonfront is a well-known student hangout with expansive water views.[8]",
+      "Mount Fuji is a cultural and spiritual symbol of Japan and a popular climbing destination.",
+    category: "nature",
+    country: "Japan",
+    coords: { lat: 35.3606, lng: 138.7274 },
+    difficulty: "medium",
   },
   {
-    id: "ajah-jubilee-bridge-1",
+    id: "serengeti-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/2/20/Ajah_Jubilee_Bridge_Lagos.jpg",
-    credit: "Wikimedia Commons (see file page)",
-    license: "CC BY-SA 4.0 (see file page)",
-    options: [
-      "Ajah Jubilee Bridge",
-      "Lekki Roundabout",
-      "Osborne Bridge",
-      "CMS Flyover",
-    ],
-    answerIndex: 0,
-    hint: "Flyover easing traffic near Ajah roundabout.",
+      "https://images.unsplash.com/photo-1516637090014-cb1ab78511f5?auto=format&fit=crop&w=1350&q=80",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Serengeti",
+    distractors: ["Masai Mara", "Kruger National Park", "Etosha National Park"],
+    hint: "Famous East African plain known for its annual wildebeest migration.",
     explain:
-      "The Ajah Jubilee Bridge is a prominent traffic solution along the Lekki–Epe corridor.[4]",
+      "The Serengeti ecosystem in Tanzania supports one of the world’s largest terrestrial mammal migrations and iconic African wildlife.",
+    difficulty: "medium",
   },
   {
-    id: "makoko-stilts-1",
+    id: "petra-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/6/6a/Makoko_Lagos_on_stilts.jpg",
-    credit: "Wikimedia Commons (see file page)",
-    license: "CC BY-SA (see file page)",
-    options: ["Makoko", "Badagry", "Epe Waterfront", "Ijora"],
-    answerIndex: 0,
-    hint: "Lagoon-side community known for houses on stilts.",
+      "https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=1350&q=80",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Petra",
+    distractors: ["Jerash", "Amman Citadel", "Wadi Rum"],
+    hint: "Rock-cut ancient city with a famous rose-red façade.",
     explain:
-      "Makoko’s wooden stilt architecture and canoe traffic are distinctive.[8]",
+      "Petra in Jordan was the capital of the Nabataean Kingdom and is famous for its carved rock architecture and water conduit system.",
+    difficulty: "hard",
   },
   {
-    id: "badagry-point-of-no-return-1",
+    id: "aurora-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/9/92/Point_of_No_Return_of_Slave_Trade_in_Badagry.jpg",
-    credit: "Solasly, Wikimedia Commons",
-    license: "CC BY-SA 4.0",
-    options: [
-      "Badagry Point of No Return",
-      "Lekki Beach",
-      "Alpha Beach",
-      "Ojo Waterfront",
-    ],
-    answerIndex: 0,
-    hint: "Historic seaside memorial linked to transatlantic slave routes.",
+      "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=1350&q=80",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Aurora Borealis",
+    distractors: ["Zodiacal Light", "Milky Way Core", "Noctilucent Clouds"],
+    hint: "Natural light display often seen toward the poles.",
     explain:
-      "The Point of No Return in Badagry commemorates a solemn part of history.[8]",
+      "The aurora borealis (northern lights) and aurora australis (southern lights) are produced by charged particles colliding with Earth’s atmosphere.",
+    difficulty: "hard",
   },
   {
-    id: "jaekel-house-1",
+    id: "niagara-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/8/87/Garden_in_Jaekel_house%2C_Ebute_Metta%2C_Lagos%2C_Nigeria_.jpeg",
-    credit: "Kaizenify, Wikimedia Commons",
-    license: "CC BY-SA 4.0",
-    options: [
-      "Jaekel House",
-      "Shitta Bey Mosque",
-      "Bogobiri House",
-      "CMS Bookshop House",
-    ],
-    answerIndex: 0,
-    hint: "Restored colonial-era residence within the Railway Compound.",
+      "https://upload.wikimedia.org/wikipedia/commons/e/e0/Niagara_Falls_from_Canada.jpg",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Niagara Falls",
+    distractors: ["Iguazu Falls", "Victoria Falls", "Yosemite Falls"],
+    hint: "Large waterfalls on a border between two countries in North America.",
     explain:
-      "Jaekel House in Ebute Metta serves as a mini‑museum for railway history.[3]",
+      "Niagara Falls straddles the border between Canada and the United States and is famed for its volume and hydroelectric power generation.",
+    difficulty: "easy",
   },
   {
-    id: "shitta-bey-mosque-1",
+    id: "angkor-wat-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/c/ce/Prince_Oyekan_-_Oba_of_Lagos_and_others%2C_photo_by_Neils_Walwin_Holm%2C_1894.jpg",
-    credit: "Neils Walwin Holm, Wikimedia Commons",
-    license: "Public Domain",
-    options: [
-      "Shitta Bey Mosque",
-      "Central Mosque Lagos",
-      "Lekki Central Mosque",
-      "Tafawa Mosque",
-    ],
-    answerIndex: 0,
-    hint: "19th-century mosque with Brazilian Baroque influences.",
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1350&q=80",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Angkor Wat",
+    distractors: ["Bayon Temple", "Ta Prohm", "Banteay Srei"],
+    hint: "Massive temple complex and national symbol of a Southeast Asian country.",
     explain:
-      "Shitta Bey Mosque reflects Afro‑Brazilian architecture on Lagos Island.[3]",
+      "Angkor Wat in Cambodia is the world’s largest religious monument and a masterpiece of Khmer architecture.",
+    difficulty: "medium",
   },
   {
-    id: "cms-bookshop-house-1",
+    id: "chichen-itza-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/6/6b/Lagos_%28Nigeria%29.jpg",
-    credit: "Anders Broberg, Wikimedia Commons",
-    license: "CC BY-SA 2.0",
-    options: [
-      "CMS Bookshop House",
-      "Bookshop House Yaba",
-      "Freedom Park Annex",
-      "Glover Hall",
-    ],
-    answerIndex: 0,
-    hint: "Modernist high-rise landmark on CMS/Marina axis.",
+      "https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?auto=format&fit=crop&w=1350&q=80",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Chichén Itzá",
+    distractors: ["Tikal", "Uxmal", "Palenque"],
+    hint: "Mesoamerican step-pyramid and astronomical monument.",
     explain:
-      "CMS Bookshop House is a recognizable modernist tower in central Lagos.[3]",
+      "A major Mayan city on the Yucatán Peninsula, Chichén Itzá’s Kukulcán pyramid aligns with equinox shadow events.",
+    difficulty: "medium",
   },
   {
-    id: "five-cowries-jetty-1",
+    id: "mount-everest-1",
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/6/6b/Lagos_%28Nigeria%29.jpg",
-    credit: "Anders Broberg, Wikimedia Commons",
-    license: "CC BY-SA 2.0",
-    options: [
-      "Five Cowries Jetty",
-      "CMS Jetty",
-      "Mile 2 Jetty",
-      "Oworonshoki Jetty",
-    ],
-    answerIndex: 0,
-    hint: "Colorful water transport hub near Falomo/Ikoyi axis.",
+      "https://upload.wikimedia.org/wikipedia/commons/d/d1/Mount_Everest_as_seen_from_Drukair2_PLW_edit.jpg",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Mount Everest",
+    distractors: ["K2", "Kangchenjunga", "Lhotse"],
+    hint: "Earth’s highest mountain above sea level.",
     explain:
-      "Five Cowries Jetty is a popular ferry terminal with distinctive branding.[4]",
+      "Sitting on the border between Nepal and China (Tibet), Mount Everest is the world’s tallest peak at 8,848 m (approx).",
+    category: "nature",
+    country: "Nepal/China",
+    difficulty: "hard",
+  },
+  {
+    id: "great-barrier-reef-1",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/d/de/Part_of_Great_Barrier_Reef_from_Helicopter.jpg",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Great Barrier Reef",
+    distractors: [
+      "Belize Barrier Reef",
+      "Red Sea Coral Reef",
+      "New Caledonia Barrier Reef",
+    ],
+    hint: "World’s largest coral reef system off the coast of a large island continent.",
+    explain:
+      "Off the coast of Queensland, Australia, the Great Barrier Reef is the largest coral reef ecosystem on Earth.",
+    category: "nature",
+    country: "Australia",
+    difficulty: "medium",
+  },
+  {
+    id: "statue-of-liberty-1",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/a/a1/Statue_of_Liberty_7.jpg",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Statue of Liberty",
+    distractors: ["Ellis Island", "Brooklyn Bridge", "Empire State Building"],
+    hint: "Copper statue gifted by a European country symbolising freedom.",
+    explain:
+      "A gift from France to the United States, the Statue of Liberty stands on Liberty Island in New York Harbor.",
+    category: "landmark",
+    country: "USA",
+    difficulty: "easy",
+  },
+  {
+    id: "santorini-1",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/3/3d/Santorini-20070808-058248-panorama-small.jpg",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Santorini",
+    distractors: ["Mykonos", "Crete", "Corfu"],
+    hint: "Greek island known for whitewashed houses and blue-domed churches.",
+    explain:
+      "Santorini is a volcanic island in the Aegean Sea famed for dramatic views, sunsets, and its cliffside towns.",
+    difficulty: "easy",
   },
 ];
+
+export const questions = rawQuestions.map((q) => {
+  const options = shuffleArray([q.answer, ...q.distractors]);
+  const answerIndex = options.findIndex((o) => o === q.answer);
+  return {
+    id: q.id,
+    image: q.image,
+    credit: q.credit,
+    license: q.license,
+    options,
+    answerIndex,
+    hint: q.hint,
+    explain: q.explain,
+    // pass through metadata for future UI/use
+    category: q.category,
+    country: q.country,
+    coords: q.coords,
+    difficulty: q.difficulty,
+  };
+});
