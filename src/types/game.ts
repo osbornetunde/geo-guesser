@@ -1,5 +1,12 @@
 export type Phase = "start" | "setup" | "question" | "reveal" | "finished" | "waiting";
 
+export type Difficulty = "easy" | "medium" | "hard" | "all";
+
+export interface GameSettings {
+  difficulty: Difficulty;
+  questionCount: number;
+}
+
 export interface Player {
   id: string;
   name: string;

@@ -3,7 +3,6 @@ import { Users, X } from "lucide-react";
 import { useMemo } from "react";
 import { cardVariants } from "../../constants/animations";
 import { TIMER_DURATION } from "../../constants/game";
-import { questions } from "../../data";
 import type { GameState } from "../../hooks/useGameState";
 import type { Player } from "../../types/game";
 import { ChoiceButton } from "../game/ChoiceButton";
@@ -39,7 +38,6 @@ export const GameContent = ({ gameState }: GameContentProps) => {
     locked,
     imageLoaded,
     imageLoading,
-    availableQuestions,
     showScoreAnimation,
     earnedPoints,
     streak,
@@ -232,8 +230,8 @@ export const GameContent = ({ gameState }: GameContentProps) => {
               Geo-Guess Lagos
             </motion.h1>
             <p className="text-gray-400 text-sm mt-2">
-              Question {questions.length - availableQuestions.length + 1} of{" "}
-              {questions.length}
+              Question {gameState.questionsAnswered + 1} of{" "}
+              {gameState.totalQuestions}
             </p>
           </div>
 
@@ -333,8 +331,8 @@ export const GameContent = ({ gameState }: GameContentProps) => {
           </motion.div>
         </div>
         <ProgressBar
-          current={availableQuestions.length}
-          total={questions.length}
+          current={gameState.totalQuestions - gameState.questionsAnswered}
+          total={gameState.totalQuestions}
         />
       </div>
 

@@ -28,6 +28,7 @@ export const GameScreen = ({ gameState }: GameScreenProps) => {
     setCollaborativeMode,
     startRound,
     resetGame,
+    initializeGame,
   } = gameState;
 
   const renderScreen = () => {
@@ -42,7 +43,7 @@ export const GameScreen = ({ gameState }: GameScreenProps) => {
             exit={{ opacity: 0, scale: 0.9, y: -20 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <StartScreen setPhase={setPhase} />
+            <StartScreen setPhase={setPhase} initializeGame={initializeGame} />
           </motion.div>
         );
       case "setup":

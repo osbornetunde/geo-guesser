@@ -214,7 +214,11 @@ export default function GeoGuessMiniApp() {
     if (phase !== "reveal") return;
 
     const transitionToNextPhase = () => {
-      if (availableQuestions.length <= 1) {
+      // Increment questions answered
+      gameState.setQuestionsAnswered((prev) => prev + 1);
+      
+      // Check if we've reached the question limit or run out of questions
+      if (gameState.questionsAnswered + 1 >= gameState.totalQuestions || availableQuestions.length <= 1) {
         setPhase("finished");
       } else {
         setPhase("waiting");
@@ -244,6 +248,7 @@ export default function GeoGuessMiniApp() {
     setUsedQuestions,
     setAvailableQuestions,
     setPhase,
+    gameState,
   ]);
 
   const enhancedGameState: GameState & {

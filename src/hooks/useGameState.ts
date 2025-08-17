@@ -5,7 +5,7 @@ import {
   TIMER_DURATION,
 } from "../constants/game";
 import { questions } from "../data";
-import type { Phase, Player, TeamStats } from "../types/game";
+import type { Phase, Player, TeamStats, GameSettings, Difficulty } from "../types/game";
 
 export type GameState = ReturnType<typeof useGameState>;
 
@@ -23,6 +23,14 @@ export const useGameState = () => {
   const [showScoreAnimation, setShowScoreAnimation] = useState(false);
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [streak, setStreak] = useState(0);
+  
+  // Game settings
+  const [gameSettings, setGameSettings] = useState<GameSettings>({
+    difficulty: "all",
+    questionCount: 10
+  });
+  const [totalQuestions, setTotalQuestions] = useState(10);
+  const [questionsAnswered, setQuestionsAnswered] = useState(0);
 
   // Team state
   const [lastPlayedStreak, setLastPlayedStreak] = useState(0);
@@ -47,6 +55,22 @@ export const useGameState = () => {
     return basePoints + streakBonus;
   }, []);
 
+  const filterQuestionsByDifficulty = useCallback((difficulty: Difficulty) => {
+    if (difficulty === "all") {
+      return questions;
+    }
+    return questions.filter(q => q.difficulty === difficulty);
+  }, []);
+
+  const initializeGame = useCallback((settings: GameSettings) => {
+    setGameSettings(settings);
+    setTotalQuestions(settings.questionCount);
+    setQuestionsAnswered(0);
+    
+    const filteredQuestions = filterQuestionsByDifficulty(settings.difficulty);
+    setAvailableQuestions(filteredQuestions);
+  }, [filterQuestionsByDifficulty]);
+
   const resetGame = useCallback(() => {
     setRound(0);
     setScore(0);
@@ -61,6 +85,12 @@ export const useGameState = () => {
     setTeamMode(false);
     setPlayers([]);
     setCurrentPlayer(null);
+    setQuestionsAnswered(0);
+    setGameSettings({
+      difficulty: "all",
+      questionCount: 10
+    });
+    setTotalQuestions(10);
     setTeamStats({
       totalScore: 0,
       totalCorrect: 0,
@@ -71,10 +101,12 @@ export const useGameState = () => {
   }, []);
 
   const startRound = useCallback(() => {
-    if (availableQuestions.length === 0) {
+    // Check if we've reached the question limit
+    if (questionsAnswered >= totalQuestions || availableQuestions.length === 0) {
       setPhase("finished");
       return;
     }
+    
     setPhase("question");
     setRound(Math.floor(Math.random() * availableQuestions.length));
     setImageLoaded(false);
@@ -86,7 +118,7 @@ export const useGameState = () => {
       const nextIndex = (currentIndex + 1) % players.length;
       setCurrentPlayer(players[nextIndex]);
     }
-  }, [availableQuestions, teamMode, players, currentPlayer]);
+  }, [availableQuestions, teamMode, players, currentPlayer, questionsAnswered, totalQuestions]);
 
   return {
     // State
@@ -111,6 +143,9 @@ export const useGameState = () => {
     currentQuestion,
     timerRef,
     timeLeftRef,
+    gameSettings,
+    totalQuestions,
+    questionsAnswered,
 
     // Actions
     setRound,
@@ -132,9 +167,11 @@ export const useGameState = () => {
     setTeamMode,
     setCollaborativeMode,
     setTeamStats,
+    setQuestionsAnswered,
     calculatePoints,
     resetGame,
     startRound,
     setLastPlayedStreak,
+    initializeGame,
   };
 };
