@@ -20,6 +20,8 @@ const mockGameState = {
   collaborativeMode: false,
   currentQuestion: questions[0],
   phase: 'start',
+  questionsAnswered: 0,
+  totalQuestions: 10,
   handleSelect: vi.fn(),
   setImageLoaded: vi.fn(),
   setImageLoading: vi.fn(),

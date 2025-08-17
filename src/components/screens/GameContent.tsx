@@ -324,6 +324,7 @@ export const GameContent = ({ gameState }: GameContentProps) => {
           >
             <button
               onClick={resetGame}
+              aria-label="Reset Game"
               className="w-10 h-10 border border-red-500/50 hover:border-red-400/70 rounded-full bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-all duration-300 hover:scale-105"
             >
               <X color="#ef4444" className="w-6 h-6" />
