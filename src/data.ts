@@ -2,20 +2,10 @@
 // At module load we shuffle options so the correct answer's position is randomized and
 // `answerIndex` is computed to match the shuffled options array.
 
-type RawQ = {
-  id: string;
-  image: string;
-  credit?: string;
-  license?: string;
-  answer: string;
-  distractors: string[]; // length should be 3
-  hint?: string;
-  explain?: string;
-  category?: string; // e.g. 'landmark' | 'nature' | 'cultural' | 'city' | 'island'
-  country?: string;
-  coords?: { lat: number; lng: number };
-  difficulty?: "easy" | "medium" | "hard";
-};
+import type { Question } from "./types";
+import type { RawQ } from "./types/game";
+
+
 
 // Seeded RNG (mulberry32) so shuffles are reproducible when a seed is provided.
 // Seed selection order:
@@ -24,8 +14,7 @@ type RawQ = {
 // 3. Fallback: fixed seed 1337
 const getSeed = (): number => {
   // Prefer Vite-provided seed when available
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const viteSeed = (import.meta as any)?.env?.VITE_SEED;
+  const viteSeed = import.meta.env?.VITE_SEED;
   if (viteSeed) return Number(viteSeed);
 
   // Fall back to Node env accessed via globalThis to avoid referencing `process` directly
@@ -393,18 +382,18 @@ const rawQuestions: RawQ[] = [
   },
 ];
 
-export const questions = rawQuestions.map((q) => {
+export const questions = rawQuestions.map((q): Question => {
   const options = shuffleArray([q.answer, ...q.distractors]);
   const answerIndex = options.findIndex((o) => o === q.answer);
   return {
     id: q.id,
     image: q.image,
-    credit: q.credit,
+    credit: q.credit ?? '',
     license: q.license,
     options,
     answerIndex,
     hint: q.hint,
-    explain: q.explain,
+    explain: q.explain ?? '',
     // pass through metadata for future UI/use
     category: q.category,
     country: q.country,

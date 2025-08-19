@@ -56,7 +56,7 @@ describe('FinishedScreen', () => {
         {...defaultProps}
         teamMode={true}
         players={players}
-        teamStats={{ totalScore: 80, totalCorrect: 8, totalIncorrect: 2 }}
+        teamStats={{ totalScore: 80, totalCorrect: 8 }}
       />
     );
     expect(screen.getByText('Team Leaderboard')).toBeInTheDocument();

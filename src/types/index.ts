@@ -7,13 +7,18 @@ export interface PerformanceData {
 }
 
 export interface Question {
-  id: number;
+  id: number | string;
   image: string;
   options: string[];
   answerIndex: number;
   credit: string;
   explain: string;
   hint?: string;
+  category?: string;
+  country?: string;
+  difficulty?: "easy" | "medium" | "hard";
+  coords?: { lat: number; lng: number };
+  license?: string;
 }
 
 export interface GameScreenProps {

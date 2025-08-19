@@ -1,21 +1,6 @@
 import { motion } from "framer-motion";
 import { Users, X } from "lucide-react";
-import type { Player, TeamStats } from "../../types/game";
-
-interface WaitingScreenProps {
-  teamMode: boolean;
-  teamStats: TeamStats;
-  score: number;
-  availableQuestions: any[];
-  streak: number;
-  players: Player[];
-  currentPlayer: Player | null;
-  collaborativeMode: boolean;
-  startRound: () => void;
-  resetGame: () => void;
-  earnedPoints: number;
-  lastPlayedStreak: number;
-}
+import type { WaitingScreenProps } from "../../types/game";
 
 export const WaitingScreen = ({
   teamMode,

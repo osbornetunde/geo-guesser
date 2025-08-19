@@ -1,6 +1,6 @@
 
 import './App.css'
-import GeoGuessMiniApp from "./GeoGuess.tsx";
+import GeoGuessMiniApp from "./GeoGuess";
 
 function App() {
 

@@ -135,7 +135,7 @@ export const FinishedScreen = ({
                     >
                       {index + 1}
                     </div>
-                    <span className="text-2xl">{player.avatar}</span>
+                    <span className="text-2xl">{player.avatar || "👤"}</span>
                     <div>
                       <div className="text-white font-medium">
                         {player.name}

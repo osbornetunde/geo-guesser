@@ -114,9 +114,6 @@ export default function GeoGuessMiniApp() {
       const { currentQuestion } = gameState;
 
       if (currentQuestion && index === currentQuestion.answerIndex) {
-        // Get current player's streak for calculation
-        const currentStreak =
-          teamMode && currentPlayer ? currentPlayer.streak : streak;
         const earned = 10;
         setEarnedPoints(earned);
 
@@ -153,7 +150,7 @@ export default function GeoGuessMiniApp() {
             ...prev,
             totalScore: prev.totalScore + 10,
             totalCorrect: prev.totalCorrect + 1,
-            bestStreak: Math.max(prev.bestStreak, newPlayerStreak),
+            bestStreak: Math.max(prev?.bestStreak ?? 0, newPlayerStreak),
           }));
 
           // Trigger confetti based on player's streak

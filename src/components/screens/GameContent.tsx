@@ -31,44 +31,24 @@ const getRevealMessage = (
 };
 
 export const GameContent = ({ gameState }: GameContentProps) => {
-  const {
-    round,
-    selected,
-    timeLeft,
-    locked,
-    imageLoaded,
-    imageLoading,
-    showScoreAnimation,
-    earnedPoints,
-    streak,
-    players,
-    currentPlayer,
-    teamMode,
-    collaborativeMode,
-    currentQuestion,
-    phase,
-    handleSelect,
-    setImageLoaded,
-    setImageLoading,
-    resetGame,
-  } = gameState;
+
 
   const QuizImage = useMemo(() => {
-    if (!currentQuestion) return null;
+    if (!gameState?.currentQuestion) return null;
 
     let difficultyBadgeClass: string | undefined;
-    if (currentQuestion.difficulty === "easy") {
+    if (gameState.currentQuestion.difficulty === "easy") {
       difficultyBadgeClass = "bg-emerald-600/80";
-    } else if (currentQuestion.difficulty === "medium") {
+    } else if (gameState.currentQuestion.difficulty === "medium") {
       difficultyBadgeClass = "bg-amber-600/80";
-    } else if (currentQuestion.difficulty === "hard") {
+    } else if (gameState.currentQuestion.difficulty === "hard") {
       difficultyBadgeClass = "bg-rose-600/80";
     }
 
     return (
       <div style={{ height: "400px", marginBottom: "24px" }}>
         <motion.div
-          key={`${currentQuestion.id}-${round}`}
+          key={`${gameState.currentQuestion.id}-${gameState.round}`}
           variants={cardVariants}
           initial="enter"
           animate="center"
@@ -81,7 +61,7 @@ export const GameContent = ({ gameState }: GameContentProps) => {
             overflow: "hidden",
           }}
         >
-          {imageLoading && (
+          {gameState.imageLoading && (
             <div
               className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-purple-500/20 animate-pulse"
               style={{
@@ -96,14 +76,14 @@ export const GameContent = ({ gameState }: GameContentProps) => {
           )}
 
           <img
-            src={currentQuestion.image}
-            alt={`Quiz question ${round + 1}`}
+            src={gameState.currentQuestion.image}
+            alt={`Quiz question ${gameState.round + 1}`}
             style={{
               width: "100%",
               height: "400px",
               objectFit: "cover",
-              opacity: imageLoaded ? 1 : 0,
-              transform: imageLoaded ? "scale(1)" : "scale(1.1)",
+              opacity: gameState.imageLoaded ? 1 : 0,
+              transform: gameState.imageLoaded ? "scale(1)" : "scale(1.1)",
               transition: "all 0.5s ease",
               display: "block",
               position: "absolute",
@@ -111,20 +91,18 @@ export const GameContent = ({ gameState }: GameContentProps) => {
               left: 0,
             }}
             onLoad={() => {
-              setImageLoaded(true);
-              setImageLoading(false);
+              gameState.setImageLoaded?.(true);
+              gameState.setImageLoading?.(false);
             }}
             onError={(e) => {
-              // If the remote image fails, swap to a local placeholder to avoid blank UI.
               const img = e.currentTarget as HTMLImageElement;
-              // Prevent infinite loop by checking a data attribute.
               if (img.dataset?.fallback === "true") {
-                setImageLoading(false);
+                gameState.setImageLoading?.(false);
                 return;
               }
               img.dataset.fallback = "true";
-              img.src = "/vite.svg"; // small local asset already in public/
-              setImageLoading(false);
+              img.src = "/vite.svg";
+              gameState.setImageLoading?.(false);
             }}
           />
 
@@ -139,34 +117,35 @@ export const GameContent = ({ gameState }: GameContentProps) => {
             }}
           >
             <p className="text-white/80 text-xs font-medium">
-              📸 {currentQuestion.credit}
+              📸 {gameState.currentQuestion.credit}
             </p>
           </div>
 
           {/* Category / country badge */}
-          {(currentQuestion.category || currentQuestion.country) && (
+          {(gameState.currentQuestion.category ||
+            gameState.currentQuestion.country) && (
             <div className="absolute top-3 left-3 flex items-center gap-2">
-              {currentQuestion.category && (
+              {gameState.currentQuestion.category && (
                 <span className="text-xs font-semibold px-2 py-1 rounded-full bg-purple-700/60 text-white backdrop-blur-sm">
-                  {currentQuestion.category}
+                  {gameState.currentQuestion.category}
                 </span>
               )}
-              {currentQuestion.country && (
+              {gameState.currentQuestion.country && (
                 <span className="text-xs font-medium px-2 py-1 rounded-full bg-black/60 text-gray-200">
-                  {currentQuestion.country}
+                  {gameState.currentQuestion.country}
                 </span>
               )}
-              {currentQuestion.difficulty && (
+              {gameState.currentQuestion.difficulty && (
                 <span
                   className={`text-xs font-semibold px-2 py-1 rounded-full text-white ${difficultyBadgeClass}`}
                 >
-                  {currentQuestion.difficulty}
+                  {gameState.currentQuestion.difficulty}
                 </span>
               )}
             </div>
           )}
 
-          {imageLoading && (
+          {gameState.imageLoading && (
             <div
               className="absolute inset-0 flex items-center justify-center"
               style={{
@@ -184,12 +163,12 @@ export const GameContent = ({ gameState }: GameContentProps) => {
       </div>
     );
   }, [
-    currentQuestion,
-    round,
-    imageLoaded,
-    imageLoading,
-    setImageLoaded,
-    setImageLoading,
+    gameState?.currentQuestion,
+    gameState?.round,
+    gameState?.imageLoaded,
+    gameState?.imageLoading,
+    gameState?.setImageLoaded,
+    gameState?.setImageLoading,
   ]);
 
   const ChoiceButtons = useMemo(() => {
@@ -200,20 +179,25 @@ export const GameContent = ({ gameState }: GameContentProps) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, staggerChildren: 0.1 }}
       >
-        {currentQuestion?.options.map((option: string, idx: number) => (
+        {gameState.currentQuestion?.options.map((option, idx) => (
           <ChoiceButton
             key={option}
             index={idx}
             option={option}
-            locked={locked}
-            selected={selected}
-            answerIndex={currentQuestion.answerIndex}
-            handleSelect={handleSelect}
+            locked={gameState.locked}
+            selected={gameState.selected}
+            answerIndex={gameState.currentQuestion.answerIndex}
+            handleSelect={gameState.handleSelect}
           />
         ))}
       </motion.div>
     );
-  }, [currentQuestion, locked, selected, handleSelect]);
+  }, [
+    gameState?.currentQuestion,
+    gameState?.locked,
+    gameState?.selected,
+    gameState?.handleSelect,
+  ]);
 
   return (
     <>
@@ -230,8 +214,8 @@ export const GameContent = ({ gameState }: GameContentProps) => {
               Geo-Guess Lagos
             </motion.h1>
             <p className="text-gray-400 text-sm mt-2">
-              Question {gameState.questionsAnswered + 1} of{" "}
-              {gameState.totalQuestions}
+              Question {(gameState?.questionsAnswered ?? 0) + 1} of{" "}
+              {gameState?.totalQuestions}
             </p>
           </div>
 
@@ -242,29 +226,37 @@ export const GameContent = ({ gameState }: GameContentProps) => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
           >
-            {((teamMode && currentPlayer && currentPlayer.streak > 0) ||
-              (!teamMode && streak > 0)) && (
+            {((gameState?.teamMode &&
+              gameState?.currentPlayer &&
+              gameState?.currentPlayer.streak > 0) ||
+              (!gameState?.teamMode && (gameState?.streak ?? 0) > 0)) && (
               <motion.div
                 className="text-yellow-400 text-sm font-bold pulse-glow"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 15 }}
               >
-                🔥 {teamMode && currentPlayer ? currentPlayer.streak : streak}
+                🔥{" "}
+                {gameState?.teamMode && gameState?.currentPlayer
+                  ? gameState?.currentPlayer.streak
+                  : gameState?.streak}
               </motion.div>
             )}
-            <CircularTimer secondsLeft={timeLeft} total={TIMER_DURATION} />
+            <CircularTimer
+              secondsLeft={gameState.timeLeft}
+              total={TIMER_DURATION}
+            />
           </motion.div>
 
           {/* Row 2, Col 1: Team info (only in team mode) */}
-          {teamMode && (
+          {gameState?.teamMode && (
             <motion.div
               className="mt-4 max-w-xs"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
             >
-              {collaborativeMode ? (
+              {gameState?.collaborativeMode ? (
                 <div className="bg-white/10 rounded-lg p-3 border border-green-400/20">
                   <div className="flex items-center gap-2 mb-2">
                     <Users className="w-4 h-4 text-green-400" />
@@ -273,41 +265,48 @@ export const GameContent = ({ gameState }: GameContentProps) => {
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {players.slice(0, 4).map((player: Player, index) => (
-                      <motion.div
-                        key={player.id}
-                        className="flex items-center gap-1 bg-white/10 rounded px-2 py-1"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.6 + index * 0.1, duration: 0.3 }}
-                      >
-                        <span className="text-xs">{player.avatar}</span>
-                        <span className="text-xs text-gray-300">
-                          {player.name}
-                        </span>
-                      </motion.div>
-                    ))}
-                    {players.length > 4 && (
+                    {gameState?.players
+                      ?.slice(0, 4)
+                      .map((player: Player, index) => (
+                        <motion.div
+                          key={player.id}
+                          className="flex items-center gap-1 bg-white/10 rounded px-2 py-1"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{
+                            delay: 0.6 + index * 0.1,
+                            duration: 0.3,
+                          }}
+                        >
+                          <span className="text-xs">{player.avatar}</span>
+                          <span className="text-xs text-gray-300">
+                            {player.name}
+                          </span>
+                        </motion.div>
+                      ))}
+                    {gameState?.players && gameState?.players?.length > 4 && (
                       <div className="text-xs text-gray-400 px-2 py-1">
-                        +{players.length - 4} more
+                        +{gameState?.players.length - 4} more
                       </div>
                     )}
                   </div>
                 </div>
               ) : (
-                currentPlayer && (
+                gameState?.currentPlayer && (
                   <motion.div
                     className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6, duration: 0.4 }}
                   >
-                    <span className="text-lg">{currentPlayer.avatar}</span>
+                    <span className="text-lg">
+                      {gameState?.currentPlayer.avatar}
+                    </span>
                     <span className="text-green-400 font-medium">
-                      {currentPlayer.name}
+                      {gameState?.currentPlayer.name}
                     </span>
                     <span className="text-gray-400 text-sm">
-                      • {currentPlayer.score} pts
+                      • {gameState?.currentPlayer.score} pts
                     </span>
                   </motion.div>
                 )
@@ -323,7 +322,7 @@ export const GameContent = ({ gameState }: GameContentProps) => {
             transition={{ delay: 0.3, duration: 0.4 }}
           >
             <button
-              onClick={resetGame}
+              onClick={gameState?.resetGame}
               aria-label="Reset Game"
               className="w-10 h-10 border border-red-500/50 hover:border-red-400/70 rounded-full bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-all duration-300 hover:scale-105"
             >
@@ -332,8 +331,11 @@ export const GameContent = ({ gameState }: GameContentProps) => {
           </motion.div>
         </div>
         <ProgressBar
-          current={gameState.totalQuestions - gameState.questionsAnswered}
-          total={gameState.totalQuestions}
+          current={
+            (gameState?.totalQuestions ?? 0) -
+            (gameState?.questionsAnswered ?? 0)
+          }
+          total={gameState?.totalQuestions ?? 0}
         />
       </div>
 
@@ -343,9 +345,11 @@ export const GameContent = ({ gameState }: GameContentProps) => {
 
       {ChoiceButtons}
 
-      {showScoreAnimation && <ScoreAnimation points={earnedPoints} />}
+      {gameState.showScoreAnimation && (
+        <ScoreAnimation points={gameState.earnedPoints} />
+      )}
 
-      {phase === "reveal" && currentQuestion && (
+      {gameState?.phase === "reveal" && gameState?.currentQuestion && (
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -353,32 +357,37 @@ export const GameContent = ({ gameState }: GameContentProps) => {
         >
           <div className="flex items-start justify-center gap-4">
             <span className="text-3xl flex-shrink-0">
-              {getRevealIcon(selected, currentQuestion.answerIndex)}
+              {getRevealIcon(gameState.selected, gameState.currentQuestion.answerIndex)}
             </span>
             <div>
               <p className="font-bold text-lg mb-2">
                 {getRevealMessage(
-                  selected,
-                  currentQuestion.answerIndex,
-                  earnedPoints
+                  gameState.selected,
+                  gameState.currentQuestion.answerIndex,
+                  gameState.earnedPoints
                 )}
               </p>
               <p className="text-gray-300 leading-relaxed">
-                {selected !== currentQuestion.answerIndex && (
+                {gameState?.selected !==
+                  gameState?.currentQuestion.answerIndex && (
                   <span className="block font-semibold text-purple-400 mb-2">
                     Answer:{" "}
-                    {currentQuestion.options[currentQuestion.answerIndex]}
+                    {
+                      gameState?.currentQuestion.options[
+                        gameState?.currentQuestion.answerIndex
+                      ]
+                    }
                   </span>
                 )}
-                {currentQuestion.explain}
+                {gameState?.currentQuestion.explain}
               </p>
-              {currentQuestion.hint && (
+              {gameState?.currentQuestion.hint && (
                 <p className="text-gray-400 text-sm mt-3 italic border-l-2 border-purple-400/50 pl-3">
-                  💡 Fun fact: {currentQuestion.hint}
+                  💡 Fun fact: {gameState?.currentQuestion.hint}
                 </p>
               )}
               {/* Map preview when coords are available */}
-              {currentQuestion.coords && (
+              {gameState?.currentQuestion.coords && (
                 <div className="mt-4">
                   <div className="text-sm text-gray-300 mb-2">
                     📍 Location preview
@@ -387,8 +396,8 @@ export const GameContent = ({ gameState }: GameContentProps) => {
                     {/* Compute OSM tile coordinates and pixel offsets for a marker */}
                     {(() => {
                       const z = 15;
-                      const lat = currentQuestion.coords.lat;
-                      const lon = currentQuestion.coords.lng;
+                      const lat = gameState?.currentQuestion.coords.lat;
+                      const lon = gameState?.currentQuestion.coords.lng;
                       const latRad = (lat * Math.PI) / 180;
                       const n = Math.pow(2, z);
                       const xtile = ((lon + 180) / 360) * n;

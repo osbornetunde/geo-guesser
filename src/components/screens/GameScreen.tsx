@@ -21,6 +21,8 @@ export const GameScreen = ({ gameState }: GameScreenProps) => {
     collaborativeMode,
     teamStats,
     streak,
+    earnedPoints,
+    lastPlayedStreak,
     setPhase,
     setPlayers,
     setTeamMode,
@@ -28,7 +30,7 @@ export const GameScreen = ({ gameState }: GameScreenProps) => {
     setCollaborativeMode,
     startRound,
     resetGame,
-    initializeGame,
+    initializeGame
   } = gameState;
 
   const renderScreen = () => {
@@ -90,8 +92,8 @@ export const GameScreen = ({ gameState }: GameScreenProps) => {
               streak={streak}
               startRound={startRound}
               resetGame={resetGame}
-              earnedPoints={gameState.earnedPoints}
-              lastPlayedStreak={gameState.lastPlayedStreak}
+              earnedPoints={earnedPoints}
+              lastPlayedStreak={lastPlayedStreak}
             />
           </motion.div>
         );
@@ -106,8 +108,8 @@ export const GameScreen = ({ gameState }: GameScreenProps) => {
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <FinishedScreen
-              score={teamMode ? teamStats.totalScore : score}
-              teamMode={teamMode}
+              score={teamMode ? teamStats?.totalScore : score}
+              teamMode={teamMode as boolean}
               players={players}
               teamStats={teamStats}
               resetGame={resetGame}

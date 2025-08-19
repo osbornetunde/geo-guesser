@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import GeoGuessMiniApp from '../GeoGuess';
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { useGameState } from '../hooks/useGameState';
 
 vi.mock('../hooks/useGameState');
 
-const mockUseGameState = useGameState as vi.Mock;
+const mockUseGameState = useGameState as Mock;
 
 describe('GeoGuessMiniApp', () => {
   beforeEach(() => {

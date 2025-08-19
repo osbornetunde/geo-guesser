@@ -6,7 +6,7 @@ interface ChoiceButtonProps {
   locked: boolean;
   selected: number | null;
   answerIndex: number;
-  handleSelect: (index: number) => void;
+  handleSelect?: (index: number) => void;
 }
 
 export const ChoiceButton = ({
@@ -24,7 +24,7 @@ export const ChoiceButton = ({
   return (
     <motion.button
       disabled={locked}
-      onClick={() => handleSelect(index)}
+      onClick={() => handleSelect?.(index)}
       whileHover={locked ? {} : { scale: 1.02, y: -2, rotateY: 2 }}
       whileTap={locked ? {} : { scale: 0.98 }}
       initial={{ opacity: 0, y: 20, rotateX: -15 }}

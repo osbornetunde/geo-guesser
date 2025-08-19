@@ -5,7 +5,7 @@ import {
   TIMER_DURATION,
 } from "../constants/game";
 import { questions } from "../data";
-import type { Phase, Player, TeamStats, GameSettings, Difficulty } from "../types/game";
+import type { Phase, Player, TeamStats, GameSettings, Difficulty, Question } from "../types/game";
 
 export type GameState = ReturnType<typeof useGameState>;
 
@@ -18,8 +18,8 @@ export const useGameState = () => {
   const [locked, setLocked] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
-  const [availableQuestions, setAvailableQuestions] = useState(questions);
-  const [usedQuestions, setUsedQuestions] = useState<typeof questions>([]);
+  const [availableQuestions, setAvailableQuestions] = useState<Question[]>(questions);
+  const [usedQuestions, setUsedQuestions] = useState<Question[]>([]);
   const [showScoreAnimation, setShowScoreAnimation] = useState(false);
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [streak, setStreak] = useState(0);
