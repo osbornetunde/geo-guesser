@@ -211,7 +211,7 @@ export const GameContent = ({ gameState }: GameContentProps) => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              Geo-Guess Lagos
+              Geo-Guess
             </motion.h1>
             <p className="text-gray-400 text-sm mt-2">
               Question {(gameState?.questionsAnswered ?? 0) + 1} of{" "}

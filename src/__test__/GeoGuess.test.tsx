@@ -41,7 +41,7 @@ describe('GeoGuessMiniApp', () => {
 
   it('renders the game screen', () => {
     render(<GeoGuessMiniApp />);
-    expect(screen.getByText('Geo-Guess Lagos')).toBeInTheDocument();
+    expect(screen.getByText('Geo-Guess')).toBeInTheDocument();
   });
 
   it('starts the timer when the phase is "question"', () => {

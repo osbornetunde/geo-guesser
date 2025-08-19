@@ -1,4 +1,3 @@
-// @ts-ignore
 import confetti from "canvas-confetti";
 import { AVATARS, CONFETTI_COLORS } from "../constants/game";
 import { questions } from "../data";
@@ -8,13 +7,13 @@ export const getPerformanceData = (percentage: number): PerformanceData => {
   if (percentage >= 90)
     return {
       emoji: "🏆",
-      message: "Outstanding! You're a Lagos expert!",
+      message: "Outstanding! You're a Landmark expert!",
       color: "from-yellow-400 to-yellow-600",
     };
   if (percentage >= 75)
     return {
       emoji: "🌟",
-      message: "Excellent knowledge of Lagos!",
+      message: "Excellent knowledge of Landmarks!",
       color: "from-blue-400 to-purple-600",
     };
   if (percentage >= 60)
@@ -31,7 +30,7 @@ export const getPerformanceData = (percentage: number): PerformanceData => {
     };
   return {
     emoji: "📚",
-    message: "Keep exploring Lagos!",
+    message: "Keep exploring Landmarks!",
     color: "from-purple-400 to-pink-600",
   };
 };
@@ -78,7 +77,7 @@ export const shareResults = (
   players: Player[]
 ) => {
   const maxScore = questions.length * 100;
-  let shareText = `🌍 Just completed Geo-Guess Lagos!\n\n`;
+  let shareText = `🌍 Just completed Geo-Guess!\n\n`;
 
   if (teamMode && players.length > 0) {
     shareText += `🏆 Team Results:\n`;
@@ -99,7 +98,7 @@ export const shareResults = (
 
   if (navigator.share) {
     navigator.share({
-      title: "Geo-Guess Lagos Results",
+      title: "Geo-Guess Results",
       text: shareText,
       url: window.location.href,
     });

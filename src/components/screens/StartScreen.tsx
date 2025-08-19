@@ -62,7 +62,7 @@ export const StartScreen = ({ setPhase, initializeGame }: StartScreenProps) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        Geo-Guess Lagos
+        Geo-Guess
       </motion.h1>
       <motion.p
         className="text-lg text-gray-300 max-w-md"
@@ -70,7 +70,7 @@ export const StartScreen = ({ setPhase, initializeGame }: StartScreenProps) => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.5 }}
       >
-        Test your knowledge of Lagos landmarks in this exciting geo-quiz game!
+        Test your knowledge of landmarks in this exciting geo-quiz game!
       </motion.p>
 
       {/* Game Settings Section */}

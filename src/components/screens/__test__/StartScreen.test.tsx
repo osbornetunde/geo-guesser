@@ -5,7 +5,7 @@ import { StartScreen } from "../StartScreen";
 describe("StartScreen", () => {
   it("renders the main heading", () => {
     render(<StartScreen setPhase={vi.fn()} initializeGame={vi.fn()} />);
-    const heading = screen.getByRole("heading", { name: /Geo-Guess Lagos/i });
+    const heading = screen.getByRole("heading", { name: /Geo-Guess/i });
     expect(heading).toBeInTheDocument();
   });
 

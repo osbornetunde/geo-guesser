@@ -421,7 +421,7 @@ export const TeamSetupScreen = ({
               </span>
             </div>
             <p className="text-sm text-gray-300 leading-relaxed">
-              Add at least one team member to start your Lagos adventure
+              Add at least one team member to start your adventure
               together!
             </p>
           </div>

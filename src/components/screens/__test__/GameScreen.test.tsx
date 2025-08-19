@@ -62,7 +62,7 @@ const mockGameState = {
 describe('GameScreen', () => {
   it('renders StartScreen when phase is "start"', () => {
     render(<GameScreen gameState={{ ...mockGameState, phase: 'start' as Phase }} />);
-    expect(screen.getByText('Geo-Guess Lagos')).toBeInTheDocument();
+    expect(screen.getByText('Geo-Guess')).toBeInTheDocument();
   });
 
   it('renders TeamSetupScreen when phase is "setup"', () => {
