@@ -34,7 +34,7 @@ export const StartScreen = ({ setPhase, initializeGame }: StartScreenProps) => {
     { value: "all", label: "All Levels", color: "text-blue-400" }
   ];
 
-  const questionCountOptions = [5, 10, 15, 20];
+  const questionCountOptions = [5, 10, 12, 15, 20];
 
   return (
     <motion.div
