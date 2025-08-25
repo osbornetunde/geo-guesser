@@ -38,6 +38,8 @@ export const useGameLogic = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     setLocked(true);
     setPhase("reveal");
+    // No points should be awarded on timeout
+    setEarnedPoints(0);
     setStreak(0);
   };
 

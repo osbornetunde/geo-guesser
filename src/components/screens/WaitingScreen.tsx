@@ -92,8 +92,8 @@ export const WaitingScreen = ({
                   typeof currentPlayer.score === "number"
                     ? currentPlayer.score
                     : 0;
-                // Only add earnedPoints if lastPlayedStreak > 0 (i.e., last answer was correct)
-                const showEarned = lastPlayedStreak > 0;
+                // Only add earnedPoints if the last answer actually earned positive points
+                const showEarned = lastPlayedStreak > 0 && earnedPoints > 0;
                 displayScore = showEarned
                   ? safeScore + earnedPoints
                   : safeScore;
