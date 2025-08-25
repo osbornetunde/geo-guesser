@@ -1,6 +1,6 @@
 export const TIMER_DURATION = 30;
 export const REVEAL_DURATION = 3500;
-export const MAX_TEAM_SIZE = 10;
+export const MAX_TEAM_SIZE = 20;
 export const BASE_POINTS = 100;
 export const STREAK_BONUS_MULTIPLIER = 10;
 
@@ -15,6 +15,21 @@ export const AVATARS = [
   "👩‍🎓",
   "🧑‍🔬",
   "👨‍🎨",
+  "🧑‍🚀",
+  "🧑‍🍳",
+  "🧑‍⚕️",
+  "👩‍⚕️",
+  "🧑‍🔧",
+  "👩‍🔧",
+  "🧑‍✈️",
+  "👩‍✈️",
+  "👩‍🏫",
+  "🧑‍🌾",
+  "🧑‍🎤",
+  "🧑‍🏭",
+  "👩‍🏭",
+  "🧑‍🎮",
+  "👩‍🎮",
 ];
 
 export const CONFETTI_COLORS = {

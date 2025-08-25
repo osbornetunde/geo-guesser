@@ -5,8 +5,6 @@
 import type { Question } from "./types";
 import type { RawQ } from "./types/game";
 
-
-
 // Seeded RNG (mulberry32) so shuffles are reproducible when a seed is provided.
 // Seed selection order:
 // 1. Vite env: import.meta.env.VITE_SEED (recommended for frontend builds/tests)
@@ -146,8 +144,7 @@ const rawQuestions: RawQ[] = [
   },
   {
     id: "burj-khalifa-1",
-    image:
-      "https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?auto=format&fit=crop&w=1350&q=80",
+    image: "https://upload.wikimedia.org/wikipedia/en/9/93/Burj_Khalifa.jpg",
     credit: "Wikimedia Commons",
     license: "See file page",
     answer: "Burj Khalifa",
@@ -211,7 +208,7 @@ const rawQuestions: RawQ[] = [
   {
     id: "table-mountain-1",
     image:
-      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1350&q=80",
+      "https://upload.wikimedia.org/wikipedia/commons/d/dc/Table_Mountain_DanieVDM.jpg",
     credit: "Wikimedia Commons",
     license: "See file page",
     answer: "Table Mountain",
@@ -227,7 +224,7 @@ const rawQuestions: RawQ[] = [
   {
     id: "mount-fuji-1",
     image:
-      "https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee?auto=format&fit=crop&w=1350&q=80",
+      "https://upload.wikimedia.org/wikipedia/commons/f/f8/View_of_Mount_Fuji_from_%C5%8Cwakudani_20211202.jpg",
     credit: "Wikimedia Commons",
     license: "See file page",
     answer: "Mount Fuji",
@@ -241,22 +238,9 @@ const rawQuestions: RawQ[] = [
     difficulty: "medium",
   },
   {
-    id: "serengeti-1",
-    image:
-      "https://images.unsplash.com/photo-1516637090014-cb1ab78511f5?auto=format&fit=crop&w=1350&q=80",
-    credit: "Wikimedia Commons",
-    license: "See file page",
-    answer: "Serengeti",
-    distractors: ["Masai Mara", "Kruger National Park", "Etosha National Park"],
-    hint: "Famous East African plain known for its annual wildebeest migration.",
-    explain:
-      "The Serengeti ecosystem in Tanzania supports one of the world’s largest terrestrial mammal migrations and iconic African wildlife.",
-    difficulty: "medium",
-  },
-  {
     id: "petra-1",
     image:
-      "https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=1350&q=80",
+      "https://upload.wikimedia.org/wikipedia/commons/2/2f/Treasury_petra_crop.jpeg",
     credit: "Wikimedia Commons",
     license: "See file page",
     answer: "Petra",
@@ -269,7 +253,7 @@ const rawQuestions: RawQ[] = [
   {
     id: "aurora-1",
     image:
-      "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=1350&q=80",
+      "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flames_in_the_sky.jpg",
     credit: "Wikimedia Commons",
     license: "See file page",
     answer: "Aurora Borealis",
@@ -295,7 +279,7 @@ const rawQuestions: RawQ[] = [
   {
     id: "angkor-wat-1",
     image:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1350&q=80",
+      "https://upload.wikimedia.org/wikipedia/commons/d/d4/20171126_Angkor_Wat_4712_DxO.jpg",
     credit: "Wikimedia Commons",
     license: "See file page",
     answer: "Angkor Wat",
@@ -308,7 +292,7 @@ const rawQuestions: RawQ[] = [
   {
     id: "chichen-itza-1",
     image:
-      "https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?auto=format&fit=crop&w=1350&q=80",
+      "https://upload.wikimedia.org/wikipedia/commons/5/51/Chichen_Itza_3.jpg",
     credit: "Wikimedia Commons",
     license: "See file page",
     answer: "Chichén Itzá",
@@ -380,6 +364,69 @@ const rawQuestions: RawQ[] = [
       "Santorini is a volcanic island in the Aegean Sea famed for dramatic views, sunsets, and its cliffside towns.",
     difficulty: "easy",
   },
+  {
+    id: "zuma-rock-1",
+    image: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Zuma_Rock.jpg",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Zuma Rock",
+    distractors: ["Aso Rock", "Olumo Rock", "Sukur Cultural Landscape"],
+    hint: "Gigantic monolith near Abuja, often called the 'Gateway to Abuja'.",
+    explain:
+      "A massive monolithic inselberg just north of Nigeria’s capital that’s a cultural landmark and notable natural feature.",
+    category: "natural landmark",
+    country: "Nigeria",
+    coords: { lat: 9.2134, lng: 7.2498 },
+    difficulty: "medium",
+  },
+  {
+    id: "olumo-rock-1",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/b/bf/Elevator_gears_at_Olumo.jpg",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Olumo Rock",
+    distractors: ["Zuma Rock", "Aso Rock", "Nike Art Gallery"],
+    hint: "Historic fortress rock in Abeokuta, once a refuge in tribal wars.",
+    explain:
+      "A 19th-century natural fortress used by the Egba people during inter-tribal conflicts; now a major tourist site and archaeological treasure.",
+    category: "historic natural landmark",
+    country: "Nigeria",
+    coords: { lat: 7.15, lng: 3.35 },
+    difficulty: "medium",
+  },
+  {
+    id: "black-star-square-1",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/5/53/Independence_Square%2C_Accra%2C_Ghana.JPG",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Black Star Square (Independence Square)",
+    distractors: ["Kwame Nkrumah Mausoleum", "Elmina Castle", "Osu Castle"],
+    hint: "Huge public square in Accra used for national parades and independence celebrations.",
+    explain:
+      "Commissioned by Ghana’s first president in 1961, it was built to celebrate independence and remains the site of major civic ceremonies.",
+    category: "public square",
+    country: "Ghana",
+    coords: { lat: 5.55, lng: -0.2 },
+    difficulty: "easy",
+  },
+  {
+    id: "kwame-nkrumah-mausoleum-1",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/2/2f/Kwame_Nkrumah_Mausoleum_in_Accra_Ghana%2C_May_2008.jpg",
+    credit: "Wikimedia Commons",
+    license: "See file page",
+    answer: "Kwame Nkrumah Mausoleum",
+    distractors: ["Black Star Square", "Osu Castle", "Lake Volta"],
+    hint: "Accra memorial park built as an upside-down sword clad in marble.",
+    explain:
+      "Dedicated to Ghana’s first president, it features his tomb, museum, and design elements symbolizing peace and unity.",
+    category: "monument/museum",
+    country: "Ghana",
+    coords: { lat: 5.5508, lng: -0.1981 },
+    difficulty: "medium",
+  },
 ];
 
 export const questions = rawQuestions.map((q): Question => {
@@ -388,12 +435,12 @@ export const questions = rawQuestions.map((q): Question => {
   return {
     id: q.id,
     image: q.image,
-    credit: q.credit ?? '',
+    credit: q.credit ?? "",
     license: q.license,
     options,
     answerIndex,
     hint: q.hint,
-    explain: q.explain ?? '',
+    explain: q.explain ?? "",
     // pass through metadata for future UI/use
     category: q.category,
     country: q.country,
